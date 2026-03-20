@@ -1,0 +1,5 @@
+@media (max-width:600px){
+  .jobs-container {
+    grid-template-columns: 1fr;
+  }
+}

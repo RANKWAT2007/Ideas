@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Job Portal</title>
+
+  <!-- ✅ CSS PATHS FIXED -->
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="stylesheet" href="/css/auth.css">
+
+  <style>
+    body{
+      margin:20px;
+    }
+ .auth-container {
+  max-width: 400px;
+  margin: 30px auto 0;   /* 👈 text ke niche + center */
+  text-align: center;
+  position: static;     /* ❌ absolute hata diya */
+  transform: none;      /* ❌ remove */
+}
+
+.auth-container form {
+  background-image:linear-gradient(to bottom right,black,rgb(199, 193, 181), rgb(199, 193, 181),rgb(199, 193, 181),black);
+  display: none;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.25);
+}
+
+.auth-container form.active {
+  display: block;
+}
+
+.toggle-link {
+  color: blue;
+  cursor: pointer;
+  margin-top: 10px;
+  display: inline-block;
+}
+
+/* ✅ BACKGROUND SAME RAHEGA */
+body {
+  background-image: url("/assets/background.avif");
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
+  min-height: 100vh;
+  margin-bottom: 100px;
+}
+
+  </style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+  <!-- ✅ LOGO PATH FIXED -->
+  <img src="/assets/logo.png" alt="logo" height="45" width="100">
+  <nav>
+    <a href="#" onclick="showLogin()">Login</a>
+    <a href="#" onclick="showRegister()">Register</a>
+  </nav>
+</header>
+
+<!-- HERO -->
+<section class="hero">
+  <font size="20" face="alegrin"><b>Welcome to Rise Career!</b></font>
+  <p><b>Browse thousands of jobs from top companies</b></p>
+</section>
+
+<!-- JOBS -->
+<section id="jobs" class="jobs-container">
+  <!-- Jobs will load here -->
+</section>
+
+<!-- AUTH SECTION -->
+<section class="auth-container">
+
+  <!-- LOGIN FORM -->
+  <form id="loginForm" class="active" autocomplete="off">
+    <h2>Login</h2>
+    <input type="email" id="loginEmail" placeholder="Email" required />
+    <input type="password" id="loginPassword" placeholder="Password" required />
+    <button type="submit">Login</button>
+
+    <span class="toggle-link" onclick="showRegister()">
+      New user? Register here
+    </span>
+  </form>
+
+  <!-- REGISTER FORM -->
+  <form id="registerForm" autocomplete="off">
+    <h2>Register</h2>
+    <input type="text" id="name" placeholder="Name" required />
+    <input type="email" id="registerEmail" placeholder="Email" required />
+    <input type="password" id="registerPassword" placeholder="Password" required />
+
+    <select id="role">
+      <option value="jobseeker">Job Seeker</option>
+      <option value="recruiter">Recruiter</option>
+    </select>
+
+    <button type="submit">Register</button>
+
+    <span class="toggle-link" onclick="showLogin()">
+      Already have an account? Login
+    </span>
+  </form>
+
+</section>
+
+<!-- JS -->
+<script>
+  function showLogin() {
+    document.getElementById("loginForm").classList.add("active");
+    document.getElementById("registerForm").classList.remove("active");
+  }
+
+  function showRegister() {
+    document.getElementById("registerForm").classList.add("active");
+    document.getElementById("loginForm").classList.remove("active");
+  }
+</script>
+
+<!-- ✅ JS PATHS FIXED -->
+<script src="/js/api.js"></script>
+<script src="/js/jobs.js"></script>
+<script src="/js/login.js"></script>
+<script src="/js/register.js"></script>
+
+</body>
+</html>

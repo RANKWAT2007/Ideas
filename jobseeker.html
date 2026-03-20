@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Job Seeker Dashboard</title>
+<script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-[rgb(199,193,181)] h-screen overflow-hidden">
+
+<script>
+const token = localStorage.getItem("token");
+const role = localStorage.getItem("role");
+
+if (!token || role !== "jobseeker") {
+  alert("Access denied");
+  window.location.href = "/html/index.html";
+}
+</script>
+
+<!-- NAVBAR -->
+<nav class="bg-black text-[rgb(199,193,181)] px-8 py-4 flex justify-between">
+  <h1 class="font-bold text-xl">Rise Career</h1>
+  <button onclick="logout()">Logout</button>
+</nav>
+
+<div class="flex h-[calc(100vh-72px)]">
+
+<!-- SIDEBAR -->
+<div class="w-64 bg-white shadow-lg border-r p-6">
+  <h2 class="font-bold text-xl mb-8">Job Seeker</h2>
+  <div class="space-y-5">
+    <button onclick="showSection('feed')" class="block w-full text-left">🏠 Feed</button>
+    <button onclick="showSection('jobs')" class="block w-full text-left">💼 Jobs</button>
+    <button onclick="showSection('applied')" class="block w-full text-left">📄 Applied</button>
+    <button onclick="showSection('profile')" class="block w-full text-left">👤 Profile</button>
+  </div>
+</div>
+
+<!-- CONTENT -->
+<div class="flex-1 p-6 overflow-y-auto space-y-6">
+
+<!-- FEED -->
+<div id="feed" class="bg-white p-6 rounded-xl shadow space-y-6">
+<h2 class="text-2xl font-bold">Feed</h2>
+
+<div class="border p-4 rounded space-y-3">
+<textarea id="postText" class="w-full border p-2 rounded" placeholder="Create a post..."></textarea>
+<input type="file" id="postImage" accept="image/*">
+<input type="file" id="postFile">
+<button onclick="createPost()" class="bg-black text-[rgb(199,193,181)] px-4 py-2 rounded">
+Post
+</button>
+</div>
+
+<div id="posts" class="space-y-4"></div>
+</div>
+
+<!-- JOBS -->
+<div id="jobs" class="hidden bg-white p-6 rounded-xl shadow">
+<h2 class="text-2xl font-bold mb-4">Available Jobs</h2>
+
+<div id="jobsList" class="grid md:grid-cols-2 gap-4">
+<p>Loading jobs...</p>
+</div>
+
+</div>
+
+<!-- APPLIED -->
+<div id="applied" class="hidden bg-white p-6 rounded-xl shadow">
+<h2 class="text-2xl font-bold mb-4">Applied Jobs</h2>
+<p>Your applied jobs list will appear here.</p>
+</div>
+
+<!-- PROFILE -->
+<div id="profile" class="hidden bg-white p-8 rounded-2xl shadow-xl space-y-8 max-w-5xl mx-auto">
+
+<h2 class="text-3xl font-bold text-center text-gray-800">
+  Complete Your Profile
+</h2>
+
+<!-- PHOTO -->
+<div class="flex flex-col items-center space-y-4">
+  <img id="preview"
+    class="w-36 h-36 rounded-full object-cover border-4 border-black shadow-md"
+    src="https://via.placeholder.com/150">
+
+  <label class="cursor-pointer bg-black text-white px-4 py-2 rounded-lg hover:bg-gray-800 transition">
+    Upload Photo
+    <input type="file" id="photo" accept="image/*" class="hidden">
+  </label>
+</div>
+
+<!-- ================= BASIC INFO ================= -->
+<div>
+<h3 class="text-xl font-semibold mb-3">👤 Basic Info</h3>
+
+<div class="grid md:grid-cols-2 gap-5">
+  <input id="name" class="input" placeholder="Full Name">
+  <input id="phone" class="input" placeholder="Phone">
+  <input id="location" class="input" placeholder="Location">
+  <input id="title" class="input" placeholder="Job Title">
+
+  <input id="dob" type="date" class="input">
+  <input id="language" class="input" placeholder="Languages (Hindi, English)">
+</div>
+</div>
+
+<!-- ================= PROFESSIONAL ================= -->
+<div>
+<h3 class="text-xl font-semibold mb-3">💼 Professional</h3>
+
+<div class="grid md:grid-cols-2 gap-5">
+  <input id="experienceLevel" class="input" placeholder="Experience (Fresher / 1-2 yrs)">
+  <input id="currentCompany" class="input" placeholder="Current Company">
+
+  <input id="currentSalary" class="input" placeholder="Current Salary">
+  <input id="noticePeriod" class="input" placeholder="Notice Period">
+</div>
+</div>
+
+<!-- ================= SKILLS ================= -->
+<div>
+<h3 class="text-xl font-semibold mb-3">🧠 Skills</h3>
+
+<div class="grid md:grid-cols-2 gap-5">
+  <input id="skills" class="input" placeholder="Technical Skills (React, Node)">
+  <input id="softSkills" class="input" placeholder="Soft Skills (Communication)">
+</div>
+</div>
+
+<!-- ================= EDUCATION ================= -->
+<div>
+<h3 class="text-xl font-semibold mb-3">🎓 Education</h3>
+
+<div class="grid md:grid-cols-2 gap-5">
+  <input id="education" class="input" placeholder="Degree">
+  <input id="college" class="input" placeholder="College">
+
+  <input id="passingYear" class="input" placeholder="Passing Year">
+  <input id="cgpa" class="input" placeholder="CGPA / Percentage">
+</div>
+</div>
+
+<!-- ================= LINKS ================= -->
+<div>
+<h3 class="text-xl font-semibold mb-3">🔗 Portfolio & Links</h3>
+
+<div class="grid md:grid-cols-2 gap-5">
+  <input id="github" class="input" placeholder="GitHub Link">
+  <input id="portfolio" class="input" placeholder="Portfolio Link">
+
+  <input id="resume" type="file" class="input">
+</div>
+</div>
+
+<!-- ================= PROJECTS ================= -->
+<div>
+<h3 class="text-xl font-semibold mb-3">🚀 Projects</h3>
+
+<div class="space-y-3">
+  <input id="projectTitle" class="input" placeholder="Project Title">
+  <input id="projectTech" class="input" placeholder="Tech Stack">
+  <input id="projectLink" class="input" placeholder="Project Link"><br><br><br><br>
+  <textarea id="projectDesc" class="input" placeholder="Project Description"></textarea>
+</div>
+</div>
+
+<!-- ================= JOB PREFERENCES ================= -->
+<div>
+<h3 class="text-xl font-semibold mb-3">🎯 Job Preferences</h3>
+
+<div class="grid md:grid-cols-2 gap-5">
+  <input id="jobType" class="input" placeholder="Job Type (Remote / Onsite)">
+  <input id="expectedSalary" class="input" placeholder="Expected Salary">
+
+  <input id="preferredLocation" class="input" placeholder="Preferred Location">
+</div>
+</div>
+
+<!-- ================= ABOUT ================= -->
+<div>
+<h3 class="text-xl font-semibold mb-3">📝 About</h3>
+
+<textarea id="about" class="input w-full" placeholder="About You"></textarea>
+<textarea id="experience" class="input w-full" placeholder="Experience Details"></textarea>
+</div>
+
+<!-- BUTTON -->
+<div class="text-center">
+  <button onclick="saveProfile()"
+    class="bg-black text-white px-8 py-3 rounded-xl text-lg font-semibold hover:bg-gray-800 transition shadow-md">
+    Save Profile
+  </button>
+</div>
+
+</div>
+
+<!-- COMMON INPUT STYLE -->
+<style>
+.input{
+  border:1px solid #ddd;
+  padding:12px;
+  border-radius:10px;
+  outline:none;
+}
+.input:focus{
+  border-color:black;
+  box-shadow:0 0 0 2px rgba(0,0,0,0.2);
+}
+</style>
+
+</div>
+
+</div>
+</div>
+
+<script>
+
+/* PROFILE PHOTO */
+document.getElementById("photo").onchange = function(){
+const reader = new FileReader();
+reader.onload = e=>{
+document.getElementById("preview").src = e.target.result;
+localStorage.setItem("profilePhoto", e.target.result);
+};
+reader.readAsDataURL(this.files[0]);
+};
+
+/* PROFILE SAVE */
+function saveProfile(){
+
+const profile = {
+  // BASIC
+  name:name.value,
+  phone:phone.value,
+  location:location.value,
+  title:title.value,
+  dob:dob.value,
+  language:language.value,
+
+  // PROFESSIONAL
+  experienceLevel:experienceLevel.value,
+  currentCompany:currentCompany.value,
+  currentSalary:currentSalary.value,
+  noticePeriod:noticePeriod.value,
+
+  // SKILLS
+  skills:skills.value,
+  softSkills:softSkills.value,
+
+  // EDUCATION
+  education:education.value,
+  college:college.value,
+  passingYear:passingYear.value,
+  cgpa:cgpa.value,
+
+  // LINKS
+  github:github.value,
+  portfolio:portfolio.value,
+
+  // PROJECT
+  projectTitle:projectTitle.value,
+  projectTech:projectTech.value,
+  projectLink:projectLink.value,
+  projectDesc:projectDesc.value,
+
+  // JOB PREF
+  jobType:jobType.value,
+  expectedSalary:expectedSalary.value,
+  preferredLocation:preferredLocation.value,
+
+  // EXTRA
+  hobbies:hobbies.value,
+  about:about.value,
+  experience:experience.value
+};
+
+localStorage.setItem("profile", JSON.stringify(profile));
+
+alert("Profile Saved ✅");
+}
+function loadProfile(){
+
+const p = JSON.parse(localStorage.getItem("profile")) || {};
+
+for(let key in p){
+  const el = document.getElementById(key);
+  if(el){
+    el.value = p[key];
+  }
+}
+
+// PHOTO
+const img = localStorage.getItem("profilePhoto");
+if(img){
+  document.getElementById("preview").src = img;
+}
+
+}
+/* POST SYSTEM */
+
+function createPost(){
+const text = postText.value.trim();
+if(!text) return alert("Write something");
+
+const post = { id:Date.now(), text };
+
+const posts = JSON.parse(localStorage.getItem("posts")) || [];
+posts.unshift(post);
+localStorage.setItem("posts", JSON.stringify(posts));
+
+postText.value="";
+loadPosts();
+}
+
+function loadPosts(){
+const posts = JSON.parse(localStorage.getItem("posts")) || [];
+const container = document.getElementById("posts");
+container.innerHTML="";
+
+posts.forEach(p=>{
+container.innerHTML += `
+<div class="border p-4 rounded bg-gray-50">
+<p>${p.text}</p>
+<div class="space-x-4 mt-2">
+<button onclick="deletePost(${p.id})" class="text-red-600">Delete</button>
+</div>
+</div>
+`;
+});
+}
+
+function deletePost(id){
+let posts = JSON.parse(localStorage.getItem("posts")) || [];
+posts = posts.filter(p => p.id !== id);
+localStorage.setItem("posts", JSON.stringify(posts));
+loadPosts();
+}
+
+/* UI */
+
+function showSection(id){
+["feed","jobs","applied","profile"].forEach(sec=>{
+document.getElementById(sec).classList.add("hidden");
+});
+
+document.getElementById(id).classList.remove("hidden");
+
+if(id==="feed") loadPosts();
+if(id==="jobs") loadJobsForSeeker();
+if(id==="applied") loadAppliedJobs();
+if(id==="profile") loadProfile();
+}
+
+function logout(){
+localStorage.clear();
+window.location.href="/html/index.html";
+}
+
+/* JOBS */
+
+async function loadJobsForSeeker(){
+
+const token = localStorage.getItem("token");
+
+const res = await fetch("http://localhost:5000/api/jobs",{
+headers:{ "Authorization":`Bearer ${token}` }
+});
+
+const data = await res.json();
+
+const container = document.getElementById("jobsList");
+container.innerHTML="";
+
+for(let job of data.jobs){
+
+const check = await fetch(`http://localhost:5000/api/applications/check/${job._id}`,{
+headers:{ "Authorization":`Bearer ${token}` }
+});
+
+const checkData = await check.json();
+
+const applied = checkData.applied;
+
+container.innerHTML += `
+<div class="bg-gray-50 p-5 rounded-lg shadow border space-y-2">
+
+<h3 class="text-lg font-bold">${job.title}</h3>
+<p>${job.company}</p>
+<p class="text-gray-500">📍 ${job.location}</p>
+
+${
+applied
+? `<button class="bg-green-600 text-white px-4 py-2 rounded">Applied ✅</button>`
+: `<button onclick="applyJob('${job._id}')" class="bg-black text-white px-4 py-2 rounded">Apply</button>`
+}
+
+</div>
+`;
+}
+
+}
+
+async function applyJob(jobId){
+
+const res = await fetch(`http://localhost:5000/api/jobs/${jobId}/apply`,{
+method:"POST",
+headers:{
+"Authorization":`Bearer ${localStorage.getItem("token")}`
+}
+});
+
+const data = await res.json();
+
+alert(data.msg || "Applied Successfully");
+
+loadJobsForSeeker();
+loadAppliedJobs();
+}
+
+async function unapplyJob(jobId){
+
+await fetch(`http://localhost:5000/api/jobs/${jobId}/unapply`,{
+method:"POST",
+headers:{
+"Authorization":`Bearer ${localStorage.getItem("token")}`
+}
+});
+
+loadJobsForSeeker();
+loadAppliedJobs();
+}
+
+async function loadAppliedJobs(){
+
+const container = document.getElementById("applied");
+
+container.innerHTML=`<h2 class="text-2xl font-bold mb-4">Applied Jobs</h2>`;
+
+const token = localStorage.getItem("token");
+
+const res = await fetch("http://localhost:5000/api/jobs/my-applications",{
+headers:{
+"Authorization":`Bearer ${token}`
+}
+});
+
+const data = await res.json();
+
+if(data.jobs.length===0){
+container.innerHTML += "<p>You have not applied to any jobs yet.</p>";
+return;
+}
+
+data.jobs.forEach(job=>{
+
+container.innerHTML += `
+<div class="bg-gray-50 p-4 rounded mb-3 shadow">
+
+<h3 class="font-bold text-lg">${job.title}</h3>
+<p>${job.company} • ${job.location}</p>
+
+<button onclick="unapplyJob('${job._id}')"
+class="mt-2 bg-red-500 text-white px-4 py-1 rounded">
+Withdraw
+</button>
+
+</div>
+`;
+
+});
+
+}
+
+showSection("feed");
+
+</script>
+
+</body>
+</html>
